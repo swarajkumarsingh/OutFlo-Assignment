@@ -83,16 +83,17 @@ export const updateCampaign = async (id: string, updateData: any): Promise<any> 
         });
       }
 
-      const fieldsToExclude = ["_id", "createdAt", "updatedAt", "__v"];
-      fieldsToExclude.forEach((field) => delete updateData[field]);
-
-      const campaign = await Campaign.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
-
-      if (!campaign) {
+      const campaign = await Campaign.findById(id);
+      if (!campaign || campaign?.status === CampaignStatus.DELETED) {
         return resolve({ notFound: "Campaign not found" });
       }
 
-      resolve({ data: campaign.toObject() });
+      const fieldsToExclude = ["_id", "createdAt", "updatedAt", "__v"];
+      fieldsToExclude.forEach((field) => delete updateData[field]);
+
+      const updatedCampaign = await Campaign.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+
+      resolve({ data: updatedCampaign?.toObject() });
     } catch (error) {
       resolve({ error: "Server Error" });
     }
@@ -107,11 +108,13 @@ export const deleteCampaign = async (id: string): Promise<any> => {
         return resolve({ notFound: "Campaign not found" });
       }
 
-      const campaign = await Campaign.findByIdAndUpdate(id, { status: CampaignStatus.DELETED }, { new: true });
-
-      if (!campaign) {
+      const campaign = await Campaign.findById(id);
+      if (!campaign || campaign.status === CampaignStatus.DELETED) {
         return resolve({ notFound: "Campaign not found" });
       }
+
+      campaign.status = CampaignStatus.DELETED;
+      await campaign.save();
 
       resolve({ data: campaign.toObject() });
     } catch (error) {
