@@ -1,26 +1,33 @@
 import { Request, Response, NextFunction } from "express";
-import { validationResult, ValidationError } from "express-validator";
-import statusCode from "../statusCode";
+import { validationResult } from "express-validator";
 
-interface CustomResponse extends Response {
-  errorResponse: (message: string, statusCode?: number, meta?: { [key: string]: any }) => Response;
+const statusCode = {
+  BAD_REQUEST: 400,
+};
+
+declare global {
+  namespace Express {
+    interface Response {
+      errorResponse: (message: string, statusCode?: number, additionalData?: any) => Response;
+    }
+  }
 }
 
-export const requestValidator = (req: Request, res: CustomResponse, next: NextFunction): Response | void => {
-  const result = validationResult(req);
+export const requestValidator = (req: Request, res: Response, next: NextFunction): void => {
+  const errors = validationResult(req);
 
-  if (!result.isEmpty()) {
-    const errorArray = result.array() as ValidationError[];
+  if (!errors.isEmpty()) {
+    try {
+      const errorFields = errors.array().map((data) => data.msg);
 
-    console.log("Validation Error:", errorArray);
-
-    const invalidFields = errorArray.map((error) => error.msg);
-    const message = errorArray[0].msg;
-
-    return res.errorResponse(message, statusCode.BAD_REQUEST, {
-      data: `Missing or Invalid Arguments: ${invalidFields.join(", ")}`,
-    });
+      res.errorResponse(`${errors.array()[0].msg}`, statusCode.BAD_REQUEST, {
+        data: `Missing or Invalid Arguments ${errorFields}`,
+      });
+    } catch (error) {
+      const errorFields = errors.array().map((data) => data.msg);
+      res.errorResponse(`Missing or Invalid Arguments ${errorFields}`);
+    }
+  } else {
+    next();
   }
-
-  next();
 };
