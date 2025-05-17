@@ -4,7 +4,7 @@
   "description": "This is a assignment by outflow",
   "main": "app.local.js",
   "scripts": {
-    "start": "node app.local.js",
+    "start": "node dist/app.local.js",
     "dev": "node --watch app.local.js",
     "build": "tsc"
   },
