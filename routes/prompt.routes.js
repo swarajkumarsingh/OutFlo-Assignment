@@ -3,6 +3,6 @@ import { generatePrompt } from "../controller/prompt.controller";
 
 const router = express.Router();
 
-router.post("/generate", generatePrompt);
+router.post("/personalized-message", generatePrompt);
 
 export default router;

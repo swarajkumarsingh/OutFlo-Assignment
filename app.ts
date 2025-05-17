@@ -20,8 +20,10 @@ app.use(morgan("common"));
   }
 })();
 
+import promptRoute from "./routes/prompt.routes";
 import campaignRoute from "./routes/campaign.routes";
 
+app.use("/api/v1/", promptRoute);
 app.use("/api/v1/", campaignRoute);
 
 export default app;

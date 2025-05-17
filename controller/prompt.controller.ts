@@ -6,6 +6,8 @@ export const generatePrompt = async (req: Request, res: Response): Promise<void>
 
   if (response && "data" in response) {
     res.status(200).json({ success: true, data: response.data });
+  } else if (response && "invalid" in response) {
+    res.status(404).json({ success: false, error: response.invalid });
   } else {
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
