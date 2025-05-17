@@ -25,7 +25,8 @@ export const getCampaigns = async (req: Request, res: Response): Promise<void> =
 };
 
 export const getCampaignById = async (req: Request, res: Response): Promise<void> => {
-  const campaign = await campaignModel.findCampaignById(req.params.id);
+  const id = req.params.id;
+  const campaign = await campaignModel.findCampaignById(id);
 
   if (campaign && "data" in campaign) {
     res.status(200).json({ success: true, data: campaign.data });
@@ -37,22 +38,26 @@ export const getCampaignById = async (req: Request, res: Response): Promise<void
 };
 
 export const updateCampaign = async (req: Request, res: Response): Promise<void> => {
-  const campaign = await campaignModel.updateCampaign(req.params.id, req.body);
+  const id = req.params.id;
+  const campaign = await campaignModel.updateCampaign(id, req.body);
 
   if (campaign && "data" in campaign) {
     res.status(200).json({ success: true, data: campaign.data });
   } else if (campaign && "notFound" in campaign) {
-    res.status(404).json({ success: false, error: campaign.notFound });
+    res.status(400).json({ success: false, error: campaign.notFound });
+  } else if (campaign && "invalid" in campaign) {
+    res.status(404).json({ success: false, error: campaign.invalid });
   } else {
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
 };
 
 export const deleteCampaign = async (req: Request, res: Response): Promise<void> => {
-  const campaign = await campaignModel.deleteCampaign(req.params.id);
+  const id = req.params.id;
+  const campaign = await campaignModel.deleteCampaign(id);
 
   if (campaign && "data" in campaign) {
-    res.status(200).json({ success: true, data: {} });
+    res.status(200).json({ success: true, data: campaign.data });
   } else if (campaign && "notFound" in campaign) {
     res.status(404).json({ success: false, error: campaign.notFound });
   } else {

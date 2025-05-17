@@ -34,7 +34,7 @@ export const findCampaignById = async (id: string): Promise<any> => {
     try {
       const valid = utils.isValidMongoId(id);
       if (!valid) {
-        return resolve({ invalid: "Invalid campaign id" });
+        return resolve({ notFound: "Campaign not found" });
       }
 
       const campaign = await Campaign.findOne({
@@ -59,7 +59,9 @@ export const createCampaign = async (body: any): Promise<any> => {
       const { _id, createdAt, updatedAt, ...filteredBody } = body;
 
       const campaign = await Campaign.create(filteredBody);
-      resolve({ data: campaign });
+      if (!campaign) resolve({ error: "Server Error" });
+
+      resolve({ data: campaign.toObject() });
     } catch (error) {
       console.log("error", error);
       resolve({ error: "Server Error" });
@@ -70,22 +72,27 @@ export const createCampaign = async (body: any): Promise<any> => {
 export const updateCampaign = async (id: string, updateData: any): Promise<any> => {
   return new Promise(async (resolve) => {
     try {
+      const valid = utils.isValidMongoId(id);
+      if (!valid) {
+        return resolve({ notFound: "Campaign not found" });
+      }
+
       if (updateData.status && ![CampaignStatus.ACTIVE, CampaignStatus.INACTIVE].includes(updateData.status)) {
         return resolve({
           invalid: "Status can only be updated to ACTIVE or INACTIVE",
         });
       }
 
-      const campaign = await Campaign.findByIdAndUpdate(id, updateData, {
-        new: true,
-        runValidators: true,
-      });
+      const fieldsToExclude = ["_id", "createdAt", "updatedAt", "__v"];
+      fieldsToExclude.forEach((field) => delete updateData[field]);
+
+      const campaign = await Campaign.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
       if (!campaign) {
         return resolve({ notFound: "Campaign not found" });
       }
 
-      resolve({ data: campaign });
+      resolve({ data: campaign.toObject() });
     } catch (error) {
       resolve({ error: "Server Error" });
     }
@@ -95,13 +102,18 @@ export const updateCampaign = async (id: string, updateData: any): Promise<any> 
 export const deleteCampaign = async (id: string): Promise<any> => {
   return new Promise(async (resolve) => {
     try {
+      const valid = utils.isValidMongoId(id);
+      if (!valid) {
+        return resolve({ notFound: "Campaign not found" });
+      }
+
       const campaign = await Campaign.findByIdAndUpdate(id, { status: CampaignStatus.DELETED }, { new: true });
 
       if (!campaign) {
         return resolve({ notFound: "Campaign not found" });
       }
 
-      resolve({ data: {} });
+      resolve({ data: campaign.toObject() });
     } catch (error) {
       resolve({ error: "Server Error" });
     }
