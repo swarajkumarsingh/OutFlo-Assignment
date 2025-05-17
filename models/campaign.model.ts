@@ -1,5 +1,6 @@
 import Campaign, { CampaignStatus } from "../db/models/Campaign";
 import neatMongoose from "../utils/mongoose-neat";
+import * as utils from "../utils/utils";
 
 export const getAllCampaigns = async (page: any, limit: any): Promise<any> => {
   try {
@@ -14,7 +15,9 @@ export const getAllCampaigns = async (page: any, limit: any): Promise<any> => {
       { $limit: mongoLimit },
       {
         $project: {
-          updatedAt: 0,
+          name: 1,
+          status: 1,
+          createAt: 1,
         },
       },
     ];
@@ -29,6 +32,11 @@ export const getAllCampaigns = async (page: any, limit: any): Promise<any> => {
 export const findCampaignById = async (id: string): Promise<any> => {
   return new Promise(async (resolve) => {
     try {
+      const valid = utils.isValidMongoId(id);
+      if (!valid) {
+        return resolve({ invalid: "Invalid campaign id" });
+      }
+
       const campaign = await Campaign.findOne({
         _id: id,
         status: { $ne: CampaignStatus.DELETED },
@@ -38,7 +46,7 @@ export const findCampaignById = async (id: string): Promise<any> => {
         return resolve({ notFound: "Campaign not found" });
       }
 
-      resolve({ data: campaign });
+      resolve({ data: campaign.toObject() });
     } catch (error) {
       resolve({ error: "Server Error" });
     }
