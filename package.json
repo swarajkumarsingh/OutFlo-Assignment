@@ -4,7 +4,9 @@
   "description": "This is a assignment by outflow",
   "main": "app.local.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.local.js",
+    "dev": "nodemon --watch . --ext ts --exec ts-node app.local.ts",
+    "build": "tsc"
   },
   "author": "Swaraj Singh",
   "license": "ISC",
