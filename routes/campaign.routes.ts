@@ -5,10 +5,10 @@ import { requestValidator } from "../utils/middlewares/express-validator";
 
 const router = express.Router();
 
-router.route("/campaign").get(controller.getCampaigns);
+router.route("/campaigns").get(controller.getCampaigns);
 
 router
-  .route("/campaign")
+  .route("/campaigns")
   .post(
     [
       body("name", "Campaign name is required").isLength({ min: 1, max: 300 }),
@@ -21,8 +21,8 @@ router
     controller.createCampaign
   );
 
-router.get("/campaign/:id", [param("id", "Invalid campaign ID").isMongoId(), requestValidator], controller.getCampaignById);
-router.put("/campaign/:id", controller.updateCampaign);
-router.delete("/campaign/:id", [param("id", "Invalid campaign ID").isMongoId(), requestValidator], controller.deleteCampaign);
+router.get("/campaigns/:id", [param("id", "Invalid campaign ID").isMongoId(), requestValidator], controller.getCampaignById);
+router.put("/campaigns/:id", controller.updateCampaign);
+router.delete("/campaigns/:id", [param("id", "Invalid campaign ID").isMongoId(), requestValidator], controller.deleteCampaign);
 
 export default router;
