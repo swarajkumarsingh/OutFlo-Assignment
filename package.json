@@ -2,7 +2,7 @@
   "name": "outflow-assignment",
   "version": "1.0.0",
   "description": "This is a assignment by outflow",
-  "main": "app.local.js",
+  "main": "dist/app.local.js",
   "scripts": {
     "start": "node dist/app.local.js",
     "dev": "node --watch app.local.js",
