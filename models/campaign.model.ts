@@ -18,6 +18,7 @@ export const getAllCampaigns = async (page: any, limit: any): Promise<any> => {
           name: 1,
           status: 1,
           createAt: 1,
+          description: 1,
         },
       },
     ];
