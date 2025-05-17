@@ -3,7 +3,7 @@ import neatMongoose from "../utils/mongoose-neat";
 
 export const getAllCampaigns = async (page: any, limit: any): Promise<any> => {
   try {
-    const mongoLimit = limit || 8;
+    const mongoLimit = parseInt(limit) || 8;
     const mongoSkip = page ? (parseInt(page) - 1) * mongoLimit : 0;
     const query = [
       {
