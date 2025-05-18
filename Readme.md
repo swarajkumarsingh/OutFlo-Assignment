@@ -6,4 +6,4 @@ frontend repo link: https://github.com/swarajkumarsingh/OutFlo-Assignment-Fronte
 
 
 Feel free to ask any question. 👍
-PS: Start at 11:30PM to 6AM, now going to sleep.
+PS: Start at 11:30PM to 6AM.
